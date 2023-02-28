@@ -1,0 +1,20 @@
+.usersContainer {
+  background-color: #47a6ea;
+  min-height: 100vh;
+  max-height: 100vh;
+  padding: 10px;
+  overflow: auto;
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #1976d2;
+}

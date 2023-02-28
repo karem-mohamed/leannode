@@ -1,0 +1,26 @@
+.mainContainer {
+  padding: 30px;
+}
+.headerContainer {
+  padding: 30px 0;
+  position: relative;
+}
+.headerTitle {
+  color: #47a6ea;
+}
+.formContainer {
+  background-color: oldlace;
+  border-radius: 5px;
+  padding: 30px;
+}
+.avatarImg {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 15px solid white;
+  object-fit: fill;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
