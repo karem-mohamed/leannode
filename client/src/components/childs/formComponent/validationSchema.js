@@ -21,14 +21,15 @@ export default function setSchema(formType) {
       password: yup
         .string()
         .matches(
-          /^(?=.*?\d)(?=.*?[a-zA-Z])[a-zA-Z\d]+$/,
-          "username must container numbers and letters"
+          /^(?=.*[A-Z])[A-Za-z0-9]+$/,
+          "username must container numbers,letters and at least one Capital letter"
         )
         .min(8)
         .required(),
       email: yup.string().email().required(),
-      description: yup.string().min(10).required(),
+      biography: yup.string().min(10).required(),
       age: yup.number().required().positive().integer(),
+      avatar: yup.mixed().required(),
     });
   } else {
     return yup.object({

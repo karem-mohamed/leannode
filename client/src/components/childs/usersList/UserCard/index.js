@@ -8,22 +8,39 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { changeUserNameAsync } from "../../../../reducers/users/usersSlice";
-export default function UserCard({ user }) {
+import Swal from "sweetalert2";
+export default function UserCard({ user, avg }) {
   const [isEdit, setIsEdit] = useState(false);
   const [username, setUsername] = useState(user.username);
+  const changeNameStatus = useSelector((state) => state.users.changeNameStatus);
 
   const dispatch = useDispatch();
   const openEditMode = () => {
     setIsEdit(true);
   };
 
-  const changeUserName = (e) => {
+  const onNameChange = (e) => {
     setUsername(e.target.value);
-    dispatch(changeUserNameAsync({ id: user.id, username: e.target.value }));
   };
+  const changeUserName = () => {
+    const regex = /^(?=.*?\d)(?=.*?[a-zA-Z])[a-zA-Z\d]+$/;
+    if (!username || !regex.test(username) || username?.length < 8) {
+      setIsEdit(false);
+      Swal.fire("Validation Error", "username Not Valid", "error");
+    } else {
+      dispatch(changeUserNameAsync({ id: user._id, username: username }));
+    }
+  };
+
+  useEffect(() => {
+    if (changeNameStatus) {
+      setIsEdit(false);
+      Swal.fire("Good job!", "username Changed Successfully", "success");
+    }
+  }, [changeNameStatus]);
   return (
     <Card sx={{ mb: 1 }}>
       <Box
@@ -35,7 +52,16 @@ export default function UserCard({ user }) {
           gap: 6,
         }}
       >
-        <Avatar sx={{ mr: 5 }} variant="rounded" src="avatar1.png" />
+        <Avatar
+          sx={{ mr: 1 }}
+          user
+          variant="rounded"
+          src={
+            user.age > avg
+              ? "avatar1.png"
+              : `${process.env.REACT_APP_SERVER_URL}${user.avatar}`
+          }
+        />
         {!isEdit && (
           <Typography sx={{ flex: 1 }} fontWeight={700}>
             {user.username}
@@ -50,14 +76,14 @@ export default function UserCard({ user }) {
               variant="outlined"
               name={"username"}
               value={username}
-              onChange={changeUserName}
+              onChange={onNameChange}
             />
-            <IconButton sx={{ ml: 5 }} onClick={() => setIsEdit(false)}>
+            <IconButton onClick={changeUserName}>
               <CheckIcon sx={{ fontSize: 14 }} />
             </IconButton>
           </>
         ) : (
-          <IconButton sx={{ ml: 5 }} onClick={openEditMode}>
+          <IconButton onClick={openEditMode}>
             <EditIcon sx={{ fontSize: 14 }} />
           </IconButton>
         )}

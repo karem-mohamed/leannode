@@ -148,7 +148,7 @@ const Input = (props) => {
             // multiple
             type="file"
             name={name}
-            value={value}
+            // value={value}
             onChange={(e) =>
               handleChange({ name: e.target.name, value: e.target.files })
             }

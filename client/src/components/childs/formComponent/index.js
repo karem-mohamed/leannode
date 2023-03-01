@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, Grid } from "@mui/material";
 import Input from "./Input";
 import styles from "./formStyle.module.css";
 import getInputs from "./getInputs";
 import setSchema from "./validationSchema";
 import Swal from "sweetalert2";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUserAsync } from "../../../reducers/users/usersSlice";
 function FormComponent() {
   const [userData, setUserData] = useState({});
@@ -13,21 +13,21 @@ function FormComponent() {
   const [allInputsErrors, setAllInputsErrors] = useState({});
   const [imgSrc, setImgSrc] = useState(null);
   const dispatch = useDispatch();
+  const creationStatus = useSelector((state) => state.users.creationStatus);
   const onInputChange = (values) => {
     const newData = { ...userData };
-    newData[values.name] = values.value;
-    console.log(values.name, "wwwwwwwww");
     if (values.name == "avatar") {
       setImgSrc(
         window.URL.createObjectURL(
           new Blob(values.value, { type: "application/zip" })
         )
       );
+      newData[values.name] = values.value[0];
     } else {
-      setUserData({ ...newData });
+      newData[values.name] = values.value;
     }
+    setUserData({ ...newData });
   };
-
   const validateForm = useCallback(async () => {
     let newErrors = {};
 
@@ -59,12 +59,17 @@ function FormComponent() {
   const submitForm = async () => {
     try {
       await validateForm();
-      Swal.fire("Good job!", "You clicked the button!", "success");
       dispatch(addUserAsync(userData));
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (creationStatus) {
+      Swal.fire("Good job!", "User Created Successfully", "success");
+    }
+  }, [creationStatus]);
 
   return (
     <div className={styles.mainContainer}>

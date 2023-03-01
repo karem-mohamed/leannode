@@ -6,6 +6,7 @@ import { getUsersAsync } from "../../../reducers/users/usersSlice";
 
 function UsersList() {
   const users = useSelector((state) => state.users.users);
+  const avg = useSelector((state) => state.users.avg);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getUsersAsync());
@@ -13,7 +14,7 @@ function UsersList() {
   return (
     <div className={styles.usersContainer}>
       {users.map((user) => {
-        return <UserCard user={user} />;
+        return <UserCard user={user} avg={avg} />;
       })}
     </div>
   );

@@ -44,9 +44,9 @@ export default function getInputs(formType) {
       },
       {
         type: "textArea",
-        name: "description",
+        name: "biography",
         required: true,
-        placeholder: "Type description",
+        placeholder: "Type Your biography",
         variant: "outlined",
         color: "primary",
       },

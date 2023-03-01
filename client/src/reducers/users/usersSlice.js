@@ -3,6 +3,9 @@ import { addUser, getUsers, changeUserName } from "./usersAPI";
 
 const initialState = {
   count: 0,
+  avg: 0,
+  creationStatus: 0,
+  changeNameStatus: 0,
   users: [],
 };
 
@@ -30,37 +33,40 @@ export const usersSlice = createSlice({
   initialState,
   reducers: {
     // addUser: (state, action) => {
-    //   state.count += 1;
     //   state.users.push(action.payload);
     // },
   },
   extraReducers: (builder) => {
     builder
       .addCase(addUserAsync.pending, (state) => {
-        state.status = "loading";
+        state.creationStatus = 0;
       })
       .addCase(addUserAsync.fulfilled, (state, action) => {
-        state.users.unshift(action.payload);
+        state.creationStatus = 1;
+        state.users.unshift(action.payload.newUser);
+        state.avg = action.payload.avg;
       })
       .addCase(getUsersAsync.pending, (state) => {
         state.status = "loading";
       })
       .addCase(getUsersAsync.fulfilled, (state, action) => {
-        state.users = action.payload;
+        state.users = action.payload.users;
+        state.avg = action.payload.avg;
       })
       .addCase(changeUserNameAsync.pending, (state) => {
         state.status = "loading";
+        state.changeNameStatus = 0;
       })
       .addCase(changeUserNameAsync.fulfilled, (state, action) => {
         const targetUserIndex = state.users.findIndex(
-          (user) => user.id == action.payload.id
+          (user) => user._id == action.payload.user._id
         );
         state.users[targetUserIndex] = {
           ...state.users[targetUserIndex],
-          username: action.payload.username,
+          username: action.payload.user.username,
         };
 
-        console.log(state.users);
+        state.changeNameStatus = 1;
       });
   },
 });

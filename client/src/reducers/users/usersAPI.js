@@ -1,28 +1,21 @@
-export function addUser(user) {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ data: user }), 500)
-  );
+import client from "../../api/axios-instance";
+export async function addUser(user) {
+  const { avatar, ...rest } = user;
+  let formData = new FormData();
+  formData.append("avatar", avatar);
+  const { data } = await client.post("/api/users/uploadAvatar", formData);
+  return await client.post("/api/users/createUser", {
+    ...user,
+    avatar: data.avatar,
+  });
 }
 
-export function getUsers() {
-  const users = [
-    { id: 1, username: "karem" },
-    {
-      id: 2,
-      username: "ahmed",
-    },
-    {
-      id: 3,
-      username: "ali",
-    },
-  ];
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ data: users }), 500)
-  );
+export async function getUsers() {
+  return await client.get("/api/users/getAllUsers");
 }
 
-export function changeUserName(user) {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ data: user }), 500)
-  );
+export async function changeUserName(user) {
+  return await client.put(`/api/users/updateUserName/${user.id}`, {
+    username: user.username,
+  });
 }
