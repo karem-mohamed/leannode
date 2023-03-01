@@ -1,6 +1,6 @@
 import client from "../../api/axios-instance";
 export async function addUser(user) {
-  const { avatar, ...rest } = user;
+  const { avatar } = user;
   let formData = new FormData();
   formData.append("avatar", avatar);
   const { data } = await client.post("/api/users/uploadAvatar", formData);

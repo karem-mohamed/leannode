@@ -34,7 +34,6 @@ const Input = (props) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-
   return (
     <div>
       {type === "text" && (
@@ -114,7 +113,7 @@ const Input = (props) => {
             {Array.apply(null, { length: range[1] - range[0] + 1 }).map(
               (item, index) => {
                 return (
-                  <MenuItem value={range[0] + index}>
+                  <MenuItem key={index + 1} value={range[0] + index}>
                     {range[0] + index}
                   </MenuItem>
                 );

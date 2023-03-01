@@ -1,7 +1,6 @@
 .usersContainer {
   background-color: #47a6ea;
-  min-height: 100vh;
-  max-height: 100vh;
+  height: 100vh;
   padding: 10px;
   overflow: auto;
 }

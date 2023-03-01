@@ -1,7 +1,7 @@
-const logger = require("../logger/logger");
-const User = require("../models/user");
+import logger from "../logger/logger.js";
+import User from "../models/user.js";
 
-module.exports = async function (req, res, next) {
+export default async function (req, res, next) {
   const { id } = req.params;
   try {
     const user = await User.findOne({ _id: id });
@@ -14,4 +14,4 @@ module.exports = async function (req, res, next) {
     console.log(error);
     logger.error(error);
   }
-};
+}

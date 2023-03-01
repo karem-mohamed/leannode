@@ -1,10 +1,9 @@
-const validateUserCreation = require("../validations/registrationSchema");
-const userService = require("../services/userService");
-const resizeImg = require("../utils/resizeImg");
+import validateUserCreation from "../validations/registrationSchema.js";
+import userService from "../services/userService.js";
+import resizeImg from "../utils/resizeImg.js";
 
 const getAllUsers = async (req, res, next) => {
-  const users = await userService.getAllUsersService();
-  const avg = await userService.getUsersAvgAges();
+  const { avg, users } = await userService.getAllUsersService();
   return res.status(200).json({ users, avg });
 };
 
@@ -28,9 +27,10 @@ const createUser = async (req, res, next) => {
     return res.status(400).json({ message: error.message });
   }
   const result = await userService.createUserService(req.body);
-  const avg = await userService.getUsersAvgAges();
   const { status, ...restData } = result;
   if (status) {
+    const avg = restData.avg;
+    delete restData.avg;
     return res.status(201).json({ newUser: restData, avg });
   } else {
     return res.status(400).json({ message: restData.message });
@@ -40,7 +40,6 @@ const uploadUserAvatar = async (req, res, next) => {
   const loaded = await userService.uploadUserAvatar();
   loaded(req, res, (err) => {
     if (err) {
-      console.log(err);
       return res.status(500).json({ message: "some thing went wrong" });
     } else {
       if (!req.file?.path) {
@@ -51,10 +50,4 @@ const uploadUserAvatar = async (req, res, next) => {
     }
   });
 };
-
-module.exports = {
-  createUser,
-  updateUserName,
-  getAllUsers,
-  uploadUserAvatar,
-};
+export default { createUser, updateUserName, getAllUsers, uploadUserAvatar };

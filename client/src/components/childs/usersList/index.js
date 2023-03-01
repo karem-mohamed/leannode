@@ -13,8 +13,8 @@ function UsersList() {
   }, []);
   return (
     <div className={styles.usersContainer}>
-      {users.map((user) => {
-        return <UserCard user={user} avg={avg} />;
+      {users.map((user, index) => {
+        return <UserCard key={index + 1} user={user} avg={avg} />;
       })}
     </div>
   );

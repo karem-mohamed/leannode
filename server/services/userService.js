@@ -1,7 +1,8 @@
-const _ = require("lodash");
-const User = require("../models/user");
-const multer = require("multer");
-const path = require("path");
+import _ from "lodash";
+import User from "../models/user.js";
+import Average from "../models/average.js";
+import multer from "multer";
+import path from "path";
 const createUserService = async (userData) => {
   const count = await User.countDocuments({ email: userData.email });
   if (count && count > 0) {
@@ -31,16 +32,45 @@ const createUserService = async (userData) => {
     "email",
     "biography",
   ]);
+  const avg = await getUsersAvgAges(user);
 
-  return { status: true, ...result };
+  return { status: true, avg, ...result };
 };
 
-const getUsersAvgAges = async () => {
-  const avg = await User.aggregate([
-    { $group: { _id: null, avg_age: { $avg: "$age" } } },
-  ]);
+///////////////////////////////////////////
+// This function has been made in order to keep the last average and not to overload the data base if the data grows
+// ///////////////////////////////////////
 
-  return avg[0].avg_age ?? 0;
+const getUsersAvgAges = async (user) => {
+  let oldAverage = await Average.findOne({});
+  if (!user) {
+    if (oldAverage) {
+      return oldAverage.values.total / oldAverage.values.count ?? 0;
+    }
+    return 0;
+  } else {
+    let newAverage;
+    if (!oldAverage) {
+      const average = new Average({
+        values: {
+          total: user.age,
+          count: 1,
+        },
+      });
+      await average.save();
+      newAverage = average.values.total;
+    } else {
+      const total = oldAverage.values.total;
+      const count = oldAverage.values.count;
+      oldAverage.values = {
+        total: total + user.age,
+        count: count + 1,
+      };
+      await oldAverage.save();
+      newAverage = oldAverage.values.total / oldAverage.values.count;
+    }
+    return newAverage ?? 0;
+  }
 };
 
 const updateUserNameService = async (userData) => {
@@ -60,8 +90,11 @@ const updateUserNameService = async (userData) => {
 };
 
 const getAllUsersService = async () => {
-  const allUsers = await User.find({});
-  return allUsers;
+  const users = await User.find({}, { password: 0 })
+    .sort({ updatedAt: "desc" })
+    .exec();
+  const avg = await getUsersAvgAges(null);
+  return { avg, users };
 };
 
 const uploadUserAvatar = async () => {
@@ -88,7 +121,7 @@ const uploadUserAvatar = async () => {
   return upload;
 };
 
-module.exports = {
+export default {
   createUserService,
   updateUserNameService,
   getAllUsersService,

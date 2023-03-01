@@ -6,9 +6,6 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   function (config) {
-    // config.headers["Accept"] = "application/json";
-    // config.headers["Content-Type"] = "application/json";
-
     // config.headers["Content-Type"] = "multipart/form-data";
 
     return config;

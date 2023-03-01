@@ -1,4 +1,4 @@
-const logger = require("../logger/logger");
+import logger from "../logger/logger.js";
 
 const errorHandler = (err, req, res, next) => {
   console.log("SERVER ERROR: ", err.message);
@@ -6,4 +6,4 @@ const errorHandler = (err, req, res, next) => {
   return res.status(500).json({ message: "Sommething went wrong" });
 };
 
-module.exports = errorHandler;
+export default errorHandler;

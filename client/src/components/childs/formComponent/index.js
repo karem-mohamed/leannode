@@ -1,19 +1,19 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button, Grid } from "@mui/material";
 import Input from "./Input";
 import styles from "./formStyle.module.css";
 import getInputs from "./getInputs";
 import setSchema from "./validationSchema";
 import Swal from "sweetalert2";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addUserAsync } from "../../../reducers/users/usersSlice";
 function FormComponent() {
   const [userData, setUserData] = useState({});
   const [formType, setFormType] = useState("create");
   const [allInputsErrors, setAllInputsErrors] = useState({});
+  const [isLoading, setisLoading] = useState(false);
   const [imgSrc, setImgSrc] = useState(null);
   const dispatch = useDispatch();
-  const creationStatus = useSelector((state) => state.users.creationStatus);
   const onInputChange = (values) => {
     const newData = { ...userData };
     if (values.name == "avatar") {
@@ -56,20 +56,28 @@ function FormComponent() {
     }
   }, [formType, userData]);
 
+  const reSetValues = () => {
+    setUserData({});
+    setImgSrc(null);
+    setisLoading(false);
+  };
+
   const submitForm = async () => {
     try {
       await validateForm();
-      dispatch(addUserAsync(userData));
+      dispatch(addUserAsync(userData))
+        .unwrap()
+        .then(() => {
+          Swal.fire("Good job!", "User Created Successfully", "success");
+          reSetValues();
+        })
+        .catch((error) => {
+          Swal.fire("Error", error.message, "error");
+        });
     } catch (error) {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (creationStatus) {
-      Swal.fire("Good job!", "User Created Successfully", "success");
-    }
-  }, [creationStatus]);
 
   return (
     <div className={styles.mainContainer}>
@@ -89,9 +97,9 @@ function FormComponent() {
           }}
         >
           <Grid container spacing={3}>
-            {getInputs(formType).map((input) => {
+            {getInputs(formType).map((input, index) => {
               return (
-                <Grid item md={6}>
+                <Grid key={index + 1} item md={6}>
                   <Input
                     type={input.type}
                     name={input.name}
@@ -116,7 +124,12 @@ function FormComponent() {
               alignItems: "end",
             }}
           >
-            <Button variant="contained" type="submit" onClick={submitForm}>
+            <Button
+              disabled={isLoading}
+              variant="contained"
+              type="submit"
+              onClick={submitForm}
+            >
               Submit
             </Button>
           </Grid>

@@ -1,7 +1,7 @@
-const jimp = require("jimp");
+import jimp from "jimp";
 
 const resizeImg = (path) => {
   jimp.read(path).then((img) => img.resize(256, 256).write(path));
 };
 
-module.exports = resizeImg;
+export default resizeImg;
